@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Search, ShoppingCart, Star, Filter } from 'lucide-react';
+import { Search, ShoppingCart, Star } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { getWhatsAppLink, CATEGORIES } from '../lib/constants';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -24,7 +24,6 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
-  const [showFilter, setShowFilter] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -54,9 +53,9 @@ export default function ProductsPage() {
           <p className="mt-0.5 md:mt-1 text-xs md:text-sm text-gray-500">Temukan jasa dan produk digital yang Anda butuhkan</p>
         </div>
 
-        {/* Search & Filter */}
-        <div className="flex gap-2 mb-4 md:gap-3 md:mb-6">
-          <div className="flex-1 relative">
+        {/* Search */}
+        <div className="mb-3 md:mb-4">
+          <div className="relative">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 md:w-4 md:h-4 text-gray-400" />
             <input
               type="text"
@@ -66,40 +65,30 @@ export default function ProductsPage() {
               className="w-full pl-8 pr-3 py-2 md:pl-9 md:pr-4 md:py-2.5 text-xs md:text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all"
             />
           </div>
-          <button
-            onClick={() => setShowFilter(!showFilter)}
-            className={`flex items-center gap-1 px-3 py-2 md:px-4 md:py-2.5 text-xs md:text-sm font-medium rounded-xl border transition-colors ${
-              category ? 'bg-emerald-50 border-emerald-200 text-emerald-600' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            <Filter className="w-3.5 h-3.5 md:w-4 md:h-4" />
-            <span className="hidden sm:inline">Filter</span>
-          </button>
         </div>
 
-        {showFilter && (
-          <div className="flex flex-wrap gap-1.5 mb-4 md:gap-2 md:mb-6 animate-[fadeIn_0.2s_ease-out]">
+        {/* Category Chips */}
+        <div className="flex gap-2 overflow-x-auto pb-3 md:pb-4 scrollbar-hide -mx-3 px-3 md:mx-0 md:px-0 md:flex-wrap md:gap-2 md:mb-2">
+          <button
+            onClick={() => setCategory('')}
+            className={`shrink-0 px-3 py-1.5 md:px-3.5 md:py-1.5 text-[11px] md:text-xs font-medium rounded-full border transition-colors whitespace-nowrap ${
+              !category ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+            }`}
+          >
+            Semua
+          </button>
+          {CATEGORIES.map(cat => (
             <button
-              onClick={() => { setCategory(''); setShowFilter(false); }}
-              className={`px-2.5 py-1 md:px-3 md:py-1.5 text-[10px] md:text-xs font-medium rounded-lg transition-colors ${
-                !category ? 'bg-emerald-500 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+              key={cat}
+              onClick={() => setCategory(cat)}
+              className={`shrink-0 px-3 py-1.5 md:px-3.5 md:py-1.5 text-[11px] md:text-xs font-medium rounded-full border transition-colors whitespace-nowrap ${
+                category === cat ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
               }`}
             >
-              Semua
+              {cat}
             </button>
-            {CATEGORIES.map(cat => (
-              <button
-                key={cat}
-                onClick={() => { setCategory(cat); setShowFilter(false); }}
-                className={`px-2.5 py-1 md:px-3 md:py-1.5 text-[10px] md:text-xs font-medium rounded-lg transition-colors ${
-                  category === cat ? 'bg-emerald-500 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-        )}
+          ))}
+        </div>
 
         {/* Products Grid */}
         {loading ? (
